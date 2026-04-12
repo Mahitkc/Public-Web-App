@@ -101,6 +101,98 @@
   color: var(--ink);
 }
 
+/* ── Rotten-Tomatoes-style movie card ─────────────────────── */
+.rt-card {
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(16, 24, 58, 0.92);
+  box-shadow: 0 4px 16px rgba(6, 10, 28, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+}
+
+.rt-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-tight);
+}
+
+.rt-card-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+.rt-card-poster-wrap {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background: #0a1333;
+  flex-shrink: 0;
+}
+
+.rt-card-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rt-card-no-poster {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--ink-muted);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.rt-score-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(6px);
+}
+
+.rt-score--fresh   { background: rgba(40, 167, 80, 0.88);  color: #fff; }
+.rt-score--mixed   { background: rgba(247, 178, 91, 0.92); color: #111; }
+.rt-score--rotten  { background: rgba(210, 50, 50, 0.88);  color: #fff; }
+.rt-score--none    { background: rgba(80, 90, 130, 0.80);  color: #dde; }
+
+.rt-card-body {
+  padding: 12px 14px 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rt-card-title {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rt-card-meta {
+  font-size: 12px;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
 .review-card .badge {
   background-color: rgba(247, 178, 91, 0.2) !important;
   color: var(--ink) !important;
@@ -170,4 +262,36 @@
   background: rgba(9, 16, 41, 0.9);
   border-top: 1px solid rgba(115, 145, 255, 0.2);
   color: var(--ink-muted);
+}
+
+/* ── Star ratings ─────────────────────────────────────────── */
+:root {
+  --star-empty: rgba(196, 200, 230, 0.25);
+}
+
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  line-height: 1;
+}
+
+.star {
+  font-style: normal;
+  font-size: 18px;
+}
+
+.star--full {
+  color: var(--accent);
+}
+
+.star--empty {
+  color: var(--star-empty);
+}
+
+.star--partial {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  overflow: visible;
 }

@@ -1,4 +1,4 @@
-import type { Movie, Review } from './types'
+import type { AverageScore, Movie, Review } from './types'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5148'
 
@@ -26,4 +26,11 @@ export function fetchReviews(movieId: number): Promise<Review[]> {
     return Promise.reject(new Error('Invalid movie id'))
   }
   return fetchJson<Review[]>(`${API_BASE}/api/movies/${movieId}/reviews`)
+}
+
+export function fetchAverageScore(movieId: number): Promise<AverageScore> {
+  if (!Number.isFinite(movieId) || movieId <= 0) {
+    return Promise.reject(new Error('Invalid movie id'))
+  }
+  return fetchJson<AverageScore>(`${API_BASE}/api/movies/${movieId}/average-score`)
 }

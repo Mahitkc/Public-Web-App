@@ -1,7 +1,36 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { fetchMovie, fetchReviews } from '../api'
+import { fetchAverageScore, fetchMovie, fetchReviews } from '../api'
 import type { Movie, Review } from '../types'
+
+function StarRating({ score, max = 5 }: { score: number; max?: number }) {
+  return (
+    <span className="star-rating" aria-label={`${score} out of ${max} stars`}>
+      {Array.from({ length: max }, (_, i) => {
+        const fill = Math.min(Math.max(score - i, 0), 1)
+        const id = `star-grad-${i}-${score}`
+        if (fill >= 1) {
+          return <span key={i} className="star star--full">★</span>
+        }
+        if (fill > 0) {
+          const pct = Math.round(fill * 100)
+          return (
+            <svg key={i} className="star star--partial" viewBox="0 0 20 20" aria-hidden="true">
+              <defs>
+                <linearGradient id={id}>
+                  <stop offset={`${pct}%`} stopColor="var(--accent)" />
+                  <stop offset={`${pct}%`} stopColor="var(--star-empty)" />
+                </linearGradient>
+              </defs>
+              <text y="16" fill={`url(#${id})`} fontSize="20">★</text>
+            </svg>
+          )
+        }
+        return <span key={i} className="star star--empty">★</span>
+      })}
+    </span>
+  )
+}
 
 function formatRuntime(hours?: number | null, minutes?: number | null): string {
   if (!hours && !minutes) return 'Runtime not listed'
@@ -24,6 +53,7 @@ export default function MovieDetailsPage() {
 
   const [movie, setMovie] = useState<Movie | null>(null)
   const [reviews, setReviews] = useState<Review[]>([])
+  const [averageScore, setAverageScore] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -38,13 +68,15 @@ export default function MovieDetailsPage() {
       }
 
       try {
-        const [movieResult, reviewResults] = await Promise.all([
+        const [movieResult, reviewResults, avgResult] = await Promise.all([
           fetchMovie(numericId),
           fetchReviews(numericId),
+          fetchAverageScore(numericId),
         ])
         if (!isActive) return
         setMovie(movieResult)
         setReviews(reviewResults)
+        setAverageScore(avgResult.averageScore)
       } catch (err) {
         if (!isActive) return
         setError(err instanceof Error ? err.message : 'Unable to load movie details.')
@@ -58,13 +90,6 @@ export default function MovieDetailsPage() {
       isActive = false
     }
   }, [numericId])
-
-  const averageScore = useMemo(() => {
-    const scored = reviews.map((review) => review.score ?? 0).filter((score) => score > 0)
-    if (scored.length === 0) return null
-    const total = scored.reduce((sum, score) => sum + score, 0)
-    return Math.round((total / scored.length) * 10) / 10
-  }, [reviews])
 
   if (loading) {
     return <div className="container py-5 text-center">Loading movie details...</div>
@@ -111,8 +136,10 @@ export default function MovieDetailsPage() {
             {movie.genreName ?? 'Genre'} · {movie.ratingName ?? 'Rating'} · {movie.releaseYear ?? 'Year'}
           </p>
           <div className="score-pill mb-3">
-            <span className="score-value">
-              {averageScore !== null ? `${averageScore} / 5` : 'No critic score yet'}
+            <span className="score-value d-flex align-items-center gap-2">
+              {averageScore !== null ? (
+                <><StarRating score={averageScore} /> <span>{averageScore} / 5</span></>
+              ) : 'No critic score yet'}
             </span>
             <span className="score-count">{reviews.length} reviews</span>
           </div>
@@ -133,9 +160,14 @@ export default function MovieDetailsPage() {
                 <div className="card-body">
                   <div className="d-flex flex-wrap justify-content-between gap-2 mb-2">
                     <strong>{review.criticName ?? 'Critic'}</strong>
-                    <span className="badge text-bg-dark">
-                      {review.score !== null && review.score !== undefined ? `${review.score} / 5` : 'No score'}
-                    </span>
+                    {review.score !== null && review.score !== undefined ? (
+                      <span className="d-flex align-items-center gap-1">
+                        <StarRating score={review.score} />
+                        <span className="badge text-bg-dark">{review.score} / 5</span>
+                      </span>
+                    ) : (
+                      <span className="badge text-bg-dark">No score</span>
+                    )}
                   </div>
                   <p className="mb-0">{review.content ?? 'No review content.'}</p>
                 </div>

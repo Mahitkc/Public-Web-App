@@ -34,7 +34,7 @@ export default function HomePage() {
   const [rating, setRating] = useState('all')
   const [year, setYear] = useState('all')
   const [sort, setSort] = useState('title-asc')
-  const [pageSize, setPageSize] = useState(6)
+  const [pageSize, setPageSize] = useState(8)
   const [page, setPage] = useState(1)
 
   useEffect(() => {
@@ -204,7 +204,7 @@ export default function HomePage() {
                   value={pageSize}
                   onChange={(event) => setPageSize(Number(event.target.value))}
                 >
-                  {[6, 9, 12].map((size) => (
+                  {[8, 12, 16].map((size) => (
                     <option key={size} value={size}>
                       {size}
                     </option>
@@ -290,38 +290,41 @@ export default function HomePage() {
             <div className="alert alert-warning">No movies match your filters.</div>
           ) : (
             <>
-              <div className="row g-4">
-                {pagedMovies.map((movie) => (
-                  <div className="col-12 col-md-6 col-xl-4" key={movie.movieId}>
-                    <div className="card h-100 shadow-sm border-0 movie-card">
-                      {movie.imageUrl ? (
-                        <img
-                          src={movie.imageUrl}
-                          className="card-img-top movie-poster"
-                          alt={`${movie.title} poster`}
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="movie-poster placeholder-poster">No poster</div>
-                      )}
-                      <div className="card-body d-flex flex-column">
-                        <h2 className="h5 card-title mb-2">{movie.title}</h2>
-                        <p className="text-muted mb-3">
-                          {movie.genreName ?? 'Genre'} · {movie.releaseYear ?? 'Year'}
-                        </p>
-                        <div className="score-pill mb-3">
-                          <span className="score-value">
-                            {movie.averageScore !== null ? `${movie.averageScore} / 5` : 'No score yet'}
-                          </span>
-                          <span className="score-count">{movie.reviewCount} reviews</span>
-                        </div>
-                        <Link className="btn btn-outline-dark mt-auto" to={`/movies/${movie.movieId}`}>
-                          View details
+              <div className="row g-3">
+                {pagedMovies.map((movie) => {
+                  const pct = movie.averageScore != null ? Math.round((movie.averageScore / 5) * 100) : null
+                  const scoreClass =
+                    pct === null ? 'none' : pct >= 70 ? 'fresh' : pct >= 50 ? 'mixed' : 'rotten'
+                  return (
+                    <div className="col-6 col-md-4 col-xl-3" key={movie.movieId}>
+                      <article className="rt-card">
+                        <Link className="rt-card-inner" to={`/movies/${movie.movieId}`}>
+                          <div className="rt-card-poster-wrap">
+                            {movie.imageUrl ? (
+                              <img
+                                src={movie.imageUrl}
+                                className="rt-card-poster"
+                                alt={`${movie.title} poster`}
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div className="rt-card-poster rt-card-no-poster">No poster</div>
+                            )}
+                            <div className={`rt-score-badge rt-score--${scoreClass}`}>
+                              {pct !== null ? `${pct}%` : 'NR'}
+                            </div>
+                          </div>
+                          <div className="rt-card-body">
+                            <h2 className="rt-card-title">{movie.title}</h2>
+                            <p className="rt-card-meta">
+                              {movie.genreName ?? 'Genre'} · {movie.releaseYear ?? 'Year'} · {movie.reviewCount} review{movie.reviewCount !== 1 ? 's' : ''}
+                            </p>
+                          </div>
                         </Link>
-                      </div>
+                      </article>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
 
               {totalPages > 1 ? (

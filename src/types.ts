@@ -19,3 +19,8 @@ export type Review = {
   criticName?: string | null
   createdDate?: string | null
 }
+
+export type AverageScore = {
+  movieId: number
+  averageScore: number | null
+}
