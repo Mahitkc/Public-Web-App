@@ -1,15 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Space+Grotesk:wght@400;500;600&display=swap');
 
 :root {
-  --ink: #f3f5ff;
-  --ink-muted: #c4c8e6;
-  --canvas: #0a1333;
-  --canvas-dark: #070f26;
-  --brand: #0b1b4d;
+  --ink: #e8ecff;
+  --ink-muted: #a8aed0;
+  --canvas: #060d22;
+  --canvas-dark: #040919;
+  --brand: #070f2e;
   --accent: #f7b25b;
   --accent-soft: rgba(247, 178, 91, 0.18);
-  --shadow-soft: 0 20px 50px rgba(6, 10, 28, 0.45);
-  --shadow-tight: 0 12px 30px rgba(6, 10, 28, 0.55);
+  --shadow-soft: 0 20px 50px rgba(2, 5, 16, 0.65);
+  --shadow-tight: 0 12px 30px rgba(2, 5, 16, 0.75);
   --font-body: 'Space Grotesk', sans-serif;
   --font-display: 'Playfair Display', serif;
 
@@ -17,6 +17,19 @@
   color: var(--ink);
   background-color: var(--canvas);
   text-rendering: optimizeLegibility;
+}
+
+[data-theme='light'] {
+  --ink: #0d1433;
+  --ink-muted: #4a5080;
+  --canvas: #f0f2ff;
+  --canvas-dark: #dde0f5;
+  --brand: #1a2f8a;
+  --accent: #d4830a;
+  --accent-soft: rgba(212, 131, 10, 0.14);
+  --shadow-soft: 0 20px 50px rgba(10, 20, 80, 0.12);
+  --shadow-tight: 0 12px 30px rgba(10, 20, 80, 0.18);
+  --star-empty: rgba(80, 90, 150, 0.25);
 }
 
 * {
@@ -27,8 +40,16 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top, rgba(86, 120, 255, 0.18), transparent 45%),
-    linear-gradient(180deg, #0a1333 0%, #0d1a40 55%, #0a1333 100%);
+    radial-gradient(circle at top, rgba(60, 90, 220, 0.14), transparent 45%),
+    linear-gradient(180deg, #060d22 0%, #080f2c 55%, #060d22 100%);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+[data-theme='light'] body,
+[data-theme='light'] {
+  background:
+    radial-gradient(circle at top, rgba(100, 130, 255, 0.08), transparent 45%),
+    linear-gradient(180deg, #f0f2ff 0%, #e4e8ff 55%, #f0f2ff 100%) !important;
 }
 
 #root {
@@ -68,4 +89,123 @@ a {
   color: var(--canvas);
   background-color: var(--accent);
   border-color: var(--accent);
+}
+
+/* ── Light mode global text fixes ────────────────────────── */
+[data-theme='light'] body,
+[data-theme='light'] h1,
+[data-theme='light'] h2,
+[data-theme='light'] h3,
+[data-theme='light'] h4,
+[data-theme='light'] h5,
+[data-theme='light'] h6,
+[data-theme='light'] .display-5,
+[data-theme='light'] .display-6 {
+  color: var(--ink);
+}
+
+[data-theme='light'] p,
+[data-theme='light'] .lead {
+  color: var(--ink-muted);
+}
+
+[data-theme='light'] a {
+  color: var(--ink);
+}
+
+[data-theme='light'] .text-muted {
+  color: var(--ink-muted) !important;
+}
+
+[data-theme='light'] .card-title,
+[data-theme='light'] .card-body,
+[data-theme='light'] .card-text,
+[data-theme='light'] strong {
+  color: var(--ink);
+}
+
+[data-theme='light'] .rt-card-title {
+  color: var(--ink);
+}
+
+[data-theme='light'] .rt-card-meta {
+  color: var(--ink-muted);
+}
+
+[data-theme='light'] .score-value {
+  color: var(--ink);
+}
+
+[data-theme='light'] .score-count {
+  color: var(--ink-muted);
+}
+
+[data-theme='light'] .section-title {
+  color: var(--ink);
+}
+
+[data-theme='light'] .eyebrow {
+  color: var(--accent);
+}
+
+[data-theme='light'] .hero-count {
+  color: var(--ink-muted);
+}
+
+[data-theme='light'] .hero-count-badge {
+  color: var(--accent);
+}
+
+[data-theme='light'] .navbar-text {
+  color: rgba(13, 20, 51, 0.75) !important;
+}
+
+[data-theme='light'] .navbar-brand {
+  color: #fff !important;
+}
+
+[data-theme='light'] .filter-panel .form-label {
+  color: var(--ink-muted);
+}
+
+[data-theme='light'] .filter-panel .form-control,
+[data-theme='light'] .filter-panel .form-select {
+  color: var(--ink);
+}
+
+[data-theme='light'] .form-control::placeholder {
+  color: rgba(13, 20, 51, 0.45);
+}
+
+[data-theme='light'] .badge {
+  color: var(--ink) !important;
+}
+
+[data-theme='light'] .alert-warning {
+  color: #5a3e00;
+}
+
+[data-theme='light'] .btn-outline-dark {
+  color: var(--ink);
+  border-color: rgba(13, 20, 51, 0.4);
+}
+
+[data-theme='light'] .btn-link {
+  color: var(--ink);
+}
+
+[data-theme='light'] .footer {
+  color: var(--ink-muted);
+  background: rgba(200, 205, 240, 0.7);
+  border-top-color: rgba(80, 110, 220, 0.2);
+}
+
+[data-theme='light'] .pagination .page-link {
+  background: rgba(220, 225, 255, 0.9);
+  color: var(--ink);
+  border-color: rgba(80, 110, 220, 0.2);
+}
+
+[data-theme='light'] .star--empty {
+  color: var(--star-empty);
 }

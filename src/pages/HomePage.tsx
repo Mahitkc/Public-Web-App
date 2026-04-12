@@ -1,16 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { fetchMovies, fetchReviews } from '../api'
-import type { Movie, Review } from '../types'
+import { fetchAverageScore, fetchMovies } from '../api'
+import type { Movie } from '../types'
 
 type MovieWithScore = Movie & { averageScore?: number | null; reviewCount: number }
-
-function calculateAverage(reviews: Review[]): number | null {
-  const scores = reviews.map((review) => review.score ?? 0).filter((score) => score > 0)
-  if (scores.length === 0) return null
-  const total = scores.reduce((sum, score) => sum + score, 0)
-  return Math.round((total / scores.length) * 10) / 10
-}
 
 function getPageNumbers(current: number, total: number): number[] {
   if (total <= 7) {
@@ -49,8 +42,8 @@ export default function HomePage() {
         const ratingEntries = await Promise.all(
           results.map(async (movie) => {
             try {
-              const reviews = await fetchReviews(movie.movieId)
-              return [movie.movieId, { average: calculateAverage(reviews), count: reviews.length }] as const
+              const avg = await fetchAverageScore(movie.movieId)
+              return [movie.movieId, { average: avg.averageScore, count: 0 }] as const
             } catch {
               return [movie.movieId, { average: null, count: 0 }] as const
             }
@@ -172,11 +165,31 @@ export default function HomePage() {
           <p className="lead mb-0">
             Browse posters, see average critic scores, and dive into detailed reviews from our critics.
           </p>
+          {!loading && !error && (
+            <p className="hero-count mt-3 mb-0">
+              <span className="hero-count-badge">{filteredMovies.length}</span>
+              {filteredMovies.length === moviesWithScores.length
+                ? ` movie${filteredMovies.length !== 1 ? 's' : ''} available`
+                : ` of ${moviesWithScores.length} movie${moviesWithScores.length !== 1 ? 's' : ''} match your filters`}
+            </p>
+          )}
         </div>
       </header>
 
       {loading ? (
-        <div className="text-center py-5">Loading movies...</div>
+        <div className="row g-3">
+          {Array.from({ length: 8 }, (_, i) => (
+            <div className="col-6 col-md-4 col-xl-3" key={i}>
+              <div className="rt-card rt-card--skeleton">
+                <div className="rt-card-poster-wrap skeleton-box" />
+                <div className="rt-card-body">
+                  <div className="skeleton-line skeleton-line--title" />
+                  <div className="skeleton-line skeleton-line--meta" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       ) : error ? (
         <div className="alert alert-danger">{error}</div>
       ) : moviesWithScores.length === 0 ? (
@@ -291,13 +304,18 @@ export default function HomePage() {
           ) : (
             <>
               <div className="row g-3">
-                {pagedMovies.map((movie) => {
+                {pagedMovies.map((movie, index) => {
                   const pct = movie.averageScore != null ? Math.round((movie.averageScore / 5) * 100) : null
                   const scoreClass =
                     pct === null ? 'none' : pct >= 70 ? 'fresh' : pct >= 50 ? 'mixed' : 'rotten'
+                  const isTopRated = movie.averageScore != null && movie.averageScore >= 4.5
                   return (
-                    <div className="col-6 col-md-4 col-xl-3" key={movie.movieId}>
-                      <article className="rt-card">
+                    <div
+                      className="col-6 col-md-4 col-xl-3"
+                      key={movie.movieId}
+                      style={{ '--card-index': index } as React.CSSProperties}
+                    >
+                      <article className="rt-card rt-card--animate">
                         <Link className="rt-card-inner" to={`/movies/${movie.movieId}`}>
                           <div className="rt-card-poster-wrap">
                             {movie.imageUrl ? (
@@ -313,11 +331,14 @@ export default function HomePage() {
                             <div className={`rt-score-badge rt-score--${scoreClass}`}>
                               {pct !== null ? `${pct}%` : 'NR'}
                             </div>
+                            {isTopRated && (
+                              <div className="rt-top-badge" title="Top rated">👑</div>
+                            )}
                           </div>
                           <div className="rt-card-body">
                             <h2 className="rt-card-title">{movie.title}</h2>
                             <p className="rt-card-meta">
-                              {movie.genreName ?? 'Genre'} · {movie.releaseYear ?? 'Year'} · {movie.reviewCount} review{movie.reviewCount !== 1 ? 's' : ''}
+                              {movie.genreName ?? 'Genre'} · {movie.releaseYear ?? 'Year'}
                             </p>
                           </div>
                         </Link>

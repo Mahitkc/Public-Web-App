@@ -160,12 +160,16 @@ export default function MovieDetailsPage() {
                 <div className="card-body">
                   <div className="d-flex flex-wrap justify-content-between gap-2 mb-2">
                     <strong>{review.criticName ?? 'Critic'}</strong>
-                    {review.score !== null && review.score !== undefined ? (
-                      <span className="d-flex align-items-center gap-1">
-                        <StarRating score={review.score} />
-                        <span className="badge text-bg-dark">{review.score} / 5</span>
-                      </span>
-                    ) : (
+                    {review.score !== null && review.score !== undefined ? (() => {
+                      const pct = Math.round((review.score / 5) * 100)
+                      const cls = pct >= 70 ? 'review-score--fresh' : pct >= 50 ? 'review-score--mixed' : 'review-score--rotten'
+                      return (
+                        <span className={`d-flex align-items-center gap-1`}>
+                          <StarRating score={review.score} />
+                          <span className={`badge review-score-badge ${cls}`}>{review.score} / 5</span>
+                        </span>
+                      )
+                    })() : (
                       <span className="badge text-bg-dark">No score</span>
                     )}
                   </div>

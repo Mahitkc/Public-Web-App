@@ -4,9 +4,60 @@
   flex-direction: column;
 }
 
+/* ── Page fade transition ─────────────────────────────────── */
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-fade {
+  animation: pageFadeIn 0.25s ease both;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Theme toggle button ──────────────────────────────────── */
+.theme-toggle {
+  background: none;
+  border: 1px solid rgba(196, 200, 230, 0.3);
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: rgba(196, 200, 230, 0.12);
+  border-color: rgba(196, 200, 230, 0.55);
+}
+
 .navbar {
-  background: var(--brand);
-  box-shadow: var(--shadow-tight);
+  background: rgba(7, 15, 46, 0.55);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border-bottom: 1px solid rgba(115, 145, 255, 0.12);
+  box-shadow: none;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.navbar--scrolled {
+  background: rgba(5, 10, 32, 0.82);
+  box-shadow: 0 4px 24px rgba(2, 5, 16, 0.55);
+}
+
+[data-theme='light'] .navbar {
+  background: rgba(26, 47, 138, 0.65);
+  border-bottom-color: rgba(80, 110, 220, 0.18);
+}
+
+[data-theme='light'] .navbar--scrolled {
+  background: rgba(26, 47, 138, 0.88);
 }
 
 .navbar-brand,
@@ -20,6 +71,12 @@
   padding: 32px;
   box-shadow: var(--shadow-soft);
   border: 1px solid rgba(115, 145, 255, 0.2);
+  transition: background 0.3s ease;
+}
+
+[data-theme='light'] .hero-panel {
+  background: rgba(220, 225, 255, 0.85);
+  border-color: rgba(80, 110, 220, 0.2);
 }
 
 .filter-panel {
@@ -28,6 +85,12 @@
   border-radius: 16px;
   padding: 20px 24px;
   box-shadow: var(--shadow-soft);
+  transition: background 0.3s ease;
+}
+
+[data-theme='light'] .filter-panel {
+  background: rgba(210, 215, 250, 0.75);
+  border-color: rgba(80, 110, 220, 0.18);
 }
 
 .filter-panel .form-label {
@@ -41,6 +104,14 @@
 .filter-panel .form-select {
   background: rgba(8, 15, 39, 0.9);
   border: 1px solid rgba(115, 145, 255, 0.25);
+  color: var(--ink);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+[data-theme='light'] .filter-panel .form-control,
+[data-theme='light'] .filter-panel .form-select {
+  background: rgba(240, 242, 255, 0.9);
+  border-color: rgba(80, 110, 220, 0.3);
   color: var(--ink);
 }
 
@@ -93,12 +164,21 @@
 
 .movie-card {
   background: rgba(16, 24, 58, 0.92);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
+}
+
+[data-theme='light'] .movie-card {
+  background: rgba(215, 220, 255, 0.85);
 }
 
 .review-card {
   background: rgba(16, 24, 58, 0.92);
   color: var(--ink);
+  transition: background 0.3s ease;
+}
+
+[data-theme='light'] .review-card {
+  background: rgba(215, 220, 255, 0.75);
 }
 
 /* ── Rotten-Tomatoes-style movie card ─────────────────────── */
@@ -107,8 +187,13 @@
   overflow: hidden;
   background: rgba(16, 24, 58, 0.92);
   box-shadow: 0 4px 16px rgba(6, 10, 28, 0.35);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
   height: 100%;
+}
+
+[data-theme='light'] .rt-card {
+  background: rgba(215, 220, 255, 0.85);
+  box-shadow: 0 4px 16px rgba(10, 20, 80, 0.1);
 }
 
 .rt-card:hover {
@@ -193,6 +278,122 @@
   margin: 0;
 }
 
+/* ── Stagger card entrance ────────────────────────────────── */
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.rt-card--animate {
+  animation: cardSlideIn 0.35s ease both;
+  animation-delay: calc(var(--card-index, 0) * 55ms);
+}
+
+/* ── Top-rated crown badge ────────────────────────────────── */
+.rt-top-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 18px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+  animation: crownPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: calc(var(--card-index, 0) * 55ms + 200ms);
+}
+
+@keyframes crownPop {
+  from { opacity: 0; transform: scale(0.4) rotate(-15deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* ── Skeleton loader ──────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+.skeleton-box,
+.skeleton-line {
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    rgba(115, 145, 255, 0.08) 25%,
+    rgba(115, 145, 255, 0.18) 50%,
+    rgba(115, 145, 255, 0.08) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+.rt-card--skeleton .rt-card-poster-wrap {
+  aspect-ratio: 2 / 3;
+}
+
+.skeleton-line {
+  height: 12px;
+  margin-bottom: 8px;
+}
+
+.skeleton-line--title {
+  width: 80%;
+  height: 14px;
+}
+
+.skeleton-line--meta {
+  width: 55%;
+}
+
+/* ── Back to top button ───────────────────────────────────── */
+.back-to-top {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: #111;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: transform 0.18s ease, opacity 0.18s ease;
+  z-index: 999;
+}
+
+.back-to-top:hover {
+  transform: translateY(-3px);
+  opacity: 0.9;
+}
+
+/* ── Hero count badge ─────────────────────────────────────── */
+.hero-count {
+  color: var(--ink-muted);
+  font-size: 14px;
+}
+
+.hero-count-badge {
+  display: inline-block;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  margin-right: 6px;
+}
+
+/* ── Review score badge colours ───────────────────────────── */
+.review-score-badge {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.review-score--fresh  { background-color: rgba(40, 167, 80, 0.25)  !important; color: #6fe89a !important; }
+.review-score--mixed  { background-color: rgba(247, 178, 91, 0.25) !important; color: var(--accent) !important; }
+.review-score--rotten { background-color: rgba(210, 50, 50, 0.25)  !important; color: #f08080 !important; }
+
 .review-card .badge {
   background-color: rgba(247, 178, 91, 0.2) !important;
   color: var(--ink) !important;
@@ -255,6 +456,18 @@
 .poster-frame {
   position: sticky;
   top: 24px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.poster-frame img {
+  transition: transform 0.35s ease;
+  display: block;
+  width: 100%;
+}
+
+.poster-frame:hover img {
+  transform: scale(1.04);
 }
 
 .footer {
